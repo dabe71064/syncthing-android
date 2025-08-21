@@ -28,13 +28,13 @@ public class AppConfigReceiver extends BroadcastReceiver {
      * Start the Syncthing-Service
      * adb shell am broadcast -a com.github.catfriend1.syncthingandroid.action.FOLLOW -p com.github.catfriend1.syncthingandroid.debug
      */
-    private static final String ACTION_FOLLOW = "com.github.catfriend1.syncthingandroid.action.FOLLOW";
+    private static final String ACTION_FOLLOW = ".action.FOLLOW";
 
     /**
      * Start the Syncthing-Service
      * adb shell am broadcast -a com.github.catfriend1.syncthingandroid.action.START -p com.github.catfriend1.syncthingandroid.debug
      */
-    private static final String ACTION_START = "com.github.catfriend1.syncthingandroid.action.START";
+    private static final String ACTION_START = ".action.START";
 
     /**
      * Stop the Syncthing-Service
@@ -42,7 +42,7 @@ public class AppConfigReceiver extends BroadcastReceiver {
      * If startServiceOnBoot is enabled the service must not be stopped. Instead a
      * notification is presented to the user.
      */
-    private static final String ACTION_STOP  = "com.github.catfriend1.syncthingandroid.action.STOP";
+    private static final String ACTION_STOP  = ".action.STOP";
 
     @Inject NotificationHandler mNotificationHandler;
 
