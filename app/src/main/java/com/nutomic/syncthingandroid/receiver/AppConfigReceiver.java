@@ -49,7 +49,7 @@ public class AppConfigReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         ((SyncthingApp) context.getApplicationContext()).component().inject(this);
-        String intentAction = intent.getAction();
+        String intentAction = intent.getAction().replaceFirst(context.getPackageName(), "");
         if (!getPrefBroadcastServiceControl(context)) {
             switch (intentAction) {
                 case ACTION_FOLLOW:
@@ -75,6 +75,8 @@ public class AppConfigReceiver extends BroadcastReceiver {
                 Log.d(TAG, "forceStop by intent");
                 setPrefBtnStateForceStartStopAndNotify(context, Constants.BTNSTATE_FORCE_STOP);
                 break;
+            default:
+                Log.w(TAG, "invalid intent action: " + intentAction);
         }
     }
 
