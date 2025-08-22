@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 ::
 SET "SCRIPT_PATH=%~dp0"
-SET "PROJECT_ROOT=%SCRIPT_PATH%..\.."
+SET "PROJECT_ROOT=%SCRIPT_PATH%..\..\.."
 SET /P PACKAGE_NAME=< "%PROJECT_ROOT%\scripts\debug\package_id.txt"
 ::
 where adb >NUL: 2>&1 || (echo [ERROR] adb is missing. Please install it first. Stop. & goto :eof)
