@@ -16,15 +16,6 @@ Syncthing-Fork "Wrapper for Syncthing" has these release channels:
 * Certificate hash: 03S43lBXATFDx9FRWgFVmMLfQDvoFgyuAaWMIn5uhqo=
 * Signing Certificate SHA256 fingerprint: <details>D3:74:B8:DE:50:57:01:31:43:C7:D1:51:5A:01:55:98:C2:DF:40:3B:E8:16:0C:AE:01:A5:8C:22:7E:6E:86:AA</details>
 
-<b>3. Google Play release build</b>
-
-* Published by [nel0x](https://github.com/nel0x) at [Google Play Store](https://play.google.com/store/apps/details?id=com.github.catfriend1.syncthingandroid)
-* May contain limited functionality due to play policies.
-* It's an appetizer for your family and friends to start their Syncthing experience.
-* File name is like: com.github.catfriend1.syncthingandroid_gplay_1.29.6.0_7d59e75.aab
-* Certificate hash: 03S43lBXATFDx9FRWgFVmMLfQDvoFgyuAaWMIn5uhqo=
-* Signing Certificate SHA256 fingerprint: <details>D3:74:B8:DE:50:57:01:31:43:C7:D1:51:5A:01:55:98:C2:DF:40:3B:E8:16:0C:AE:01:A5:8C:22:7E:6E:86:AA</details>
-
 <b>4. GitHub debug build</b>
 
 * Only published on GitHub
