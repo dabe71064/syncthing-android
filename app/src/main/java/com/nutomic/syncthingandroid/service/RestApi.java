@@ -422,7 +422,7 @@ public class RestApi {
                 try {
                     Set<String> facilitiesToStore = new HashSet<String>();
                     JsonObject json = new JsonParser().parse(result).getAsJsonObject();
-                    JsonObject jsonFacilities = json.getAsJsonObject("facilities");
+                    JsonObject jsonFacilities = json.getAsJsonObject("packages");
                     for (String facilityName : jsonFacilities.keySet()) {
                         facilitiesToStore.add(facilityName);
                     }
