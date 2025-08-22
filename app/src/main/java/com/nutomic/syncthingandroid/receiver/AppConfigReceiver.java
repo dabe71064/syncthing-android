@@ -72,6 +72,7 @@ public class AppConfigReceiver extends BroadcastReceiver {
                 break;
             case ACTION_STOP:
                 Log.d(TAG, "forceStop by intent");
+                context.stopService(new Intent(context, SyncthingService.class));
                 setPrefBtnStateForceStartStopAndNotify(context, Constants.BTNSTATE_FORCE_STOP);
                 break;
             default:
