@@ -1,5 +1,7 @@
 FROM eclipse-temurin:21-jdk-jammy
 
+# This is read by other scripts but no longer relevant here as we build
+# go from source in "build-syncthing.py".
 ENV GO_VERSION=1.25.0
 
 # Can be found scrolling down on this page:
@@ -10,14 +12,7 @@ WORKDIR /opt
 # The '--reinstall' combined with 'build-essentials' is necessary for cgo
 # compilation of go std libs to work. A terrible, arcane hack to solve arkane
 # cgo issues - almost fitting.
-RUN apt-get update && apt-get install --reinstall --no-install-recommends -y build-essential gcc unzip git gnupg python3
-
-# Install Go
-RUN wget -nv https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz && \
-    tar -zxf go${GO_VERSION}.linux-amd64.tar.gz && \
-    rm go${GO_VERSION}.linux-amd64.tar.gz
-ENV GOROOT=/opt/go
-ENV PATH=/opt/go/bin:${PATH}
+RUN apt-get update && apt-get install --reinstall --no-install-recommends -y build-essential gcc unzip git gnupg golang-go python3
 
 # Install Android SDK manager
 RUN mkdir -p /opt/android-sdk && cd /opt/android-sdk && \
