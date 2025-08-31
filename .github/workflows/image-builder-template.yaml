@@ -17,7 +17,7 @@ env:
 jobs:
   build-image:
     name: Build Builder Docker
-    runs-on: ubuntu-latest
+    runs-on: debian-latest
     permissions:
       contents: read
       packages: write
