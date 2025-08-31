@@ -146,18 +146,18 @@ def install_go():
     go_build_dir = os.path.join(prerequisite_tools_dir, 'go')
     go_bin_path = os.path.join(go_build_dir, 'bin')
 
-    GO_VERSION = get_go_version_from_dockerfile()
+    expected_version = get_go_version_from_dockerfile()
 
     # Check if we already have a built Go with correct version
     built_go = os.path.join(go_bin_path, 'go')
     if os.path.isfile(built_go):
         built_version = get_go_version(built_go)
-        if built_version == GO_VERSION:
-            print('Go', GO_VERSION, 'already built at:', go_bin_path)
+        if built_version == expected_version:
+            print('Go', expected_version, 'already built at:', go_bin_path)
             os.environ["PATH"] = go_bin_path + os.pathsep + os.environ["PATH"]
             return
         else:
-            print('Built Go version', built_version, 'does not match required', GO_VERSION, '- rebuilding')
+            print('Built Go version', built_version, 'does not match required', expected_version, '- rebuilding')
 
     # Find system Go for bootstrap (assume it exists as per fdroid environment)
     system_go = which("go")
@@ -166,17 +166,17 @@ def install_go():
     
     system_version = get_go_version(system_go)
     print('Found system Go version:', system_version, 'at:', system_go)
-    print('Required Go version:', GO_VERSION)
+    print('Required Go version:', expected_version)
     
-    if system_version == GO_VERSION:
+    if system_version == expected_version:
         print('System Go version matches required version. No build needed.')
         return
     
-    print('System Go version differs from required. Building Go', GO_VERSION, 'from source using system Go as bootstrap...')
+    print('System Go version differs from required. Building Go', expected_version, 'from source using system Go as bootstrap...')
 
     # Download Go source code from GitHub
-    go_source_url = 'https://github.com/golang/go/archive/go' + GO_VERSION + '.tar.gz'
-    go_source_tar = os.path.join(prerequisite_tools_dir, 'go-source-' + GO_VERSION + '.tar.gz')
+    go_source_url = 'https://github.com/golang/go/archive/go' + expected_version + '.tar.gz'
+    go_source_tar = os.path.join(prerequisite_tools_dir, 'go-source-' + expected_version + '.tar.gz')
     
     if not os.path.isfile(go_source_tar):
         print('Downloading Go source to:', go_source_tar)
@@ -184,7 +184,7 @@ def install_go():
     print('Downloaded Go source to:', go_source_tar)
 
     # Extract Go source
-    go_extract_dir = os.path.join(prerequisite_tools_dir, 'go-go' + GO_VERSION)
+    go_extract_dir = os.path.join(prerequisite_tools_dir, 'go-go' + expected_version)
     if not os.path.isdir(go_extract_dir):
         print("Extracting Go source ...")
         with tarfile.open(go_source_tar, 'r:gz') as tar:
@@ -222,8 +222,8 @@ def install_go():
         print('Successfully built Go:', result.decode().strip())
         
         built_version = get_go_version(built_go)
-        if built_version != GO_VERSION:
-            fail('Built Go version ' + str(built_version) + ' does not match expected ' + GO_VERSION)
+        if built_version != expected_version:
+            fail('Built Go version ' + str(built_version) + ' does not match expected ' + expected_version)
         
     except Exception as e:
         fail('Built Go is not working: ' + str(e))
