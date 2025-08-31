@@ -12,7 +12,7 @@ WORKDIR /opt
 # The '--reinstall' combined with 'build-essentials' is necessary for cgo
 # compilation of go std libs to work. A terrible, arcane hack to solve arkane
 # cgo issues - almost fitting.
-RUN apt-get update && apt-get install --reinstall --no-install-recommends -y build-essential gcc unzip git gnupg golang-go python3
+RUN apt-get update && apt-get install --reinstall --no-install-recommends -y build-essential gcc unzip git gnupg python3
 
 # Install Android SDK manager
 RUN mkdir -p /opt/android-sdk && cd /opt/android-sdk && \
