@@ -5,11 +5,6 @@ import shutil
 import subprocess
 import sys
 import platform
-#
-# Script Compatibility:
-# - Python 2.7.15
-# - Python 3.9.6
-#
 
 PLATFORM_DIRS = {
     'Windows': 'windows-x86_64',
@@ -20,24 +15,6 @@ PLATFORM_DIRS = {
 # Leave empty to auto-detect version by 'git describe'.
 FORCE_DISPLAY_SYNCTHING_VERSION = ''
 FILENAME_SYNCTHING_BINARY = 'libsyncthingnative.so'
-
-def get_go_version_from_dockerfile():
-    """Read GO_VERSION from docker/Dockerfile"""
-    dockerfile_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'docker', 'Dockerfile')
-    try:
-        with open(dockerfile_path, 'r') as f:
-            for line in f:
-                line = line.strip()
-                if line.startswith('ENV GO_VERSION='):
-                    return line.split('=')[1]
-    except Exception as e:
-        print('Warning: Could not read GO_VERSION from Dockerfile:', e)
-        return '1.25.0'  # fallback to default
-    return '1.25.0'  # fallback if not found
-
-GO_VERSION = get_go_version_from_dockerfile()
-GO_EXPECTED_SHASUM_LINUX = '2852af0cb20a13139b3448992e69b868e50ed0f8a1e5940ee1de9e19a123b613'
-GO_EXPECTED_SHASUM_WINDOWS = '89efb4f9b30812eee083cc1770fdd2913c14d301064f6454851428f9707d190b'
 
 NDK_VERSION = 'r28'
 NDK_EXPECTED_SHASUM_LINUX = '894f469c5192a116d21f412de27966140a530ebc'
@@ -138,6 +115,20 @@ def get_go_version(go_binary):
     except:
         return None
 
+def get_go_version_from_dockerfile():
+    """Read GO_VERSION from docker/Dockerfile"""
+    dockerfile_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'docker', 'Dockerfile')
+    try:
+        with open(dockerfile_path, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith('ENV GO_VERSION='):
+                    return line.split('=')[1]
+    except Exception as e:
+        print('Warning: Could not read GO_VERSION from Dockerfile:', e)
+        return None
+    return None
+
 def install_go():
     import os
     import tarfile
@@ -154,7 +145,9 @@ def install_go():
 
     go_build_dir = os.path.join(prerequisite_tools_dir, 'go')
     go_bin_path = os.path.join(go_build_dir, 'bin')
-    
+
+    GO_VERSION = get_go_version_from_dockerfile()
+
     # Check if we already have a built Go with correct version
     built_go = os.path.join(go_bin_path, 'go')
     if os.path.isfile(built_go):
@@ -346,24 +339,16 @@ print('git_bin=\'' + git_bin + '\'')
 # Check if go is available and has correct version.
 go_bin = which("go");
 if not go_bin:
-    print('Info: go is not available on the PATH. Trying install_go')
-    install_go();
-    # Retry: Check if go is available.
-    go_bin = which("go");
-    if not go_bin:
-        fail('Error: go is not available on the PATH.')
-else:
-    # Check if the available Go has the correct version
-    current_version = get_go_version(go_bin)
-    print('Found Go version:', current_version, 'at:', go_bin)
-    print('Required Go version:', GO_VERSION)
-    if current_version != GO_VERSION:
-        print('Go version mismatch. Installing correct version...')
-        install_go()
-        # Update go_bin to point to the newly built Go
-        go_bin = which("go")
-        if not go_bin:
-            fail('Error: go is not available on the PATH after installation.')
+    fail('Error: go is not available on the PATH. Please install go to build go itself.')
+
+# Check if the available Go has the correct version
+# If not, use present go to build the correct go version.
+install_go()
+
+# Update go_bin to point to the newly built Go
+go_bin = which("go")
+if not go_bin:
+    fail('Error: go is not available on the PATH after installation.')
 
 print('go_bin=\'' + go_bin + '\'')
 
