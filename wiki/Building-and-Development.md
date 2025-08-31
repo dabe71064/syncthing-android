@@ -9,7 +9,7 @@ Build SyncthingNative and the Syncthing-Android wrapper using the following comm
 ```bash
 #
 # Install prerequisites.
-apt-get -y install gcc git openjdk-21-jdk-headless python3 unzip
+apt-get -y install gcc git golang-go openjdk-21-jdk-headless python3 unzip
 #
 # Clone repository.
 mkdir -p ~/git && cd ~/git
