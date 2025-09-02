@@ -1,4 +1,4 @@
-FROM ubuntu-latest
+FROM debian:stable-slim
 
 # This is read by other scripts but no longer relevant here as we build
 # go from source in "build-syncthing.py".
