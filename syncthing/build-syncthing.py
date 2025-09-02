@@ -106,11 +106,7 @@ def get_expected_go_version():
     import os
     import re
     import json
-
-    if sys.version_info[0] >= 3:
-        from urllib.request import urlretrieve
-    else:
-        from urllib import urlretrieve
+    import urllib.request
 
     workflow_path = os.path.join(
         os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
@@ -141,7 +137,7 @@ def get_expected_go_version():
         raise RuntimeError("Could not find GO_VERSION in build-syncthing.yaml.")
 
     url = "https://go.dev/dl/?mode=json"
-    with urlretrieve.urlopen(url) as resp:
+    with urllib.request.urlopen(url) as resp:
         releases = json.load(resp)
 
     # Find recent release corresponding to base_version.
