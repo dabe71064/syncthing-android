@@ -1,8 +1,6 @@
 FROM debian:stable-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
-# ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
-# ENV PATH="$JAVA_HOME/bin:$PATH"
 
 # Can be found scrolling down on this page:
 # https://developer.android.com/studio/index.html#command-tools
