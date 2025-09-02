@@ -30,8 +30,7 @@ Builds:
         libtool pkg-config rename shtool
     gradle:
       - yes
-    prebuild:
-      - sed -i -e '/signingConfig/,+2d' build.gradle.kts
+    prebuild: sed -i -e '/signingConfig/,+2d' build.gradle.kts
     scanignore:
       - syncthing/src/github.com/syncthing/syncthing/lib/model/testdata
     build:
@@ -39,11 +38,11 @@ Builds:
         -f 4)
       - sdkmanager "ndk;$ndkversion"
 
+AllowedAPKSigningKeys: d374b8de5057013143c7d1515a015598c2df403be8160cae01a58c227e6e86aa
+
 MaintainerNotes: |-
   The submodule in syncthing/src/github.com/syncthing/syncthing must be
   pristine, as the version/release information is taken from git.
-
-AllowedAPKSigningKeys: d374b8de5057013143c7d1515a015598c2df403be8160cae01a58c227e6e86aa
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v2[a-z0-9.]*$
