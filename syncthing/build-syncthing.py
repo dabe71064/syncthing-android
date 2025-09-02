@@ -115,20 +115,6 @@ def get_go_version(go_binary):
     except:
         return None
 
-def get_go_version_from_dockerfile():
-    """Read GO_VERSION from docker/Dockerfile"""
-    dockerfile_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'docker', 'Dockerfile')
-    try:
-        with open(dockerfile_path, 'r') as f:
-            for line in f:
-                line = line.strip()
-                if line.startswith('ENV GO_VERSION='):
-                    return line.split('=')[1]
-    except Exception as e:
-        print('Warning: Could not read GO_VERSION from Dockerfile:', e)
-        return None
-    return None
-
 def install_go():
     import os
     import tarfile
@@ -146,7 +132,7 @@ def install_go():
     go_build_dir = os.path.join(prerequisite_tools_dir, 'go')
     go_bin_path = os.path.join(go_build_dir, 'bin')
 
-    expected_version = get_go_version_from_dockerfile()
+    expected_version = "1.25.0"
 
     # Check if we already have a built Go with correct version
     built_go = os.path.join(go_bin_path, 'go')
