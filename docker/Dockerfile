@@ -36,7 +36,9 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Add go to PATH.
 ENV GOROOT=/usr/lib/go
+ENV PATH=$GOROOT/bin:$PATH
 
 # Install Android SDK manager
 RUN mkdir -p /opt/android-sdk && cd /opt/android-sdk && \
