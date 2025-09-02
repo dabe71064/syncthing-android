@@ -188,7 +188,10 @@ def install_go():
     if not os.path.isdir(go_extract_dir):
         print("Extracting Go source ...")
         with tarfile.open(go_source_tar, 'r:gz') as tar:
-            tar.extractall(prerequisite_tools_dir)
+            try:
+                tar.extractall(prerequisite_tools_dir, filter="data")
+            except TypeError:
+                tar.extractall(prerequisite_tools_dir)
 
     # Prepare the Go build directory
     if os.path.isdir(go_build_dir):
