@@ -175,22 +175,8 @@ def install_go():
     if not os.path.isdir(prerequisite_tools_dir):
         os.makedirs(prerequisite_tools_dir)
 
-    go_build_dir = os.path.join(prerequisite_tools_dir, 'go')
-    go_bin_path = os.path.join(go_build_dir, 'bin')
-
     expected_version = get_expected_go_version()
     print('Required Go version:', expected_version)
-
-    # Check if we already have a built Go with correct version
-    built_go = os.path.join(go_bin_path, 'go')
-    if os.path.isfile(built_go):
-        built_version = get_go_version(built_go)
-        if built_version == expected_version:
-            print('Go', expected_version, 'already built at:', go_bin_path)
-            os.environ["PATH"] = go_bin_path + os.pathsep + os.environ["PATH"]
-            return
-        else:
-            print('Built Go version', built_version, 'does not match required', expected_version, '- rebuilding')
 
     # Find system Go for bootstrap (assume it exists as per fdroid environment)
     system_go = which("go")
@@ -226,6 +212,7 @@ def install_go():
                 tar.extractall(prerequisite_tools_dir)
 
     # Prepare the Go build directory
+    go_build_dir = os.path.join(prerequisite_tools_dir, 'go')
     if os.path.isdir(go_build_dir):
         shutil.rmtree(go_build_dir)
     
@@ -246,6 +233,10 @@ def install_go():
         # Make sure the script is executable
         os.chmod(build_script, 0o755)
         subprocess.check_call(['bash', build_script], env=build_env, cwd=os.path.join(go_build_dir, 'src'))
+
+    # Check if we already have a built Go with correct version
+    go_bin_path = os.path.join(go_build_dir, 'bin')
+    built_go = os.path.join(go_bin_path, 'go')
 
     # Verify the build
     if not os.path.isfile(built_go):
