@@ -11,7 +11,6 @@ on:
         required: false
 
 env:
-  GO_VERSION: "~1.25.0"
   # template var
   image: ghcr.io/catfriend1/syncthing-android-builder
 
@@ -27,12 +26,6 @@ jobs:
         with:
           submodules: true
           fetch-depth: 0
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          check-latest: true
-          go-version: ${{ env.GO_VERSION }}
 
       - uses: docker/setup-buildx-action@v3
 
