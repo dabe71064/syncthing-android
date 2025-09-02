@@ -223,8 +223,7 @@ def install_go():
     print('Building Go from source using system Go as bootstrap...')
     build_env = os.environ.copy()
     build_env['GOROOT_BOOTSTRAP'] = os.path.dirname(os.path.dirname(system_go))
-    build_env['GOROOT'] = go_build_dir
-    
+
     if sys.platform == 'win32':
         build_script = os.path.join(go_build_dir, 'src', 'make.bat')
         subprocess.check_call([build_script], env=build_env, cwd=os.path.join(go_build_dir, 'src'))
