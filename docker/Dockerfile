@@ -1,18 +1,44 @@
-FROM eclipse-temurin:21-jdk-jammy
+FROM ubuntu-latest
 
 # This is read by other scripts but no longer relevant here as we build
 # go from source in "build-syncthing.py".
 ENV GO_VERSION=1.25.0
+
+ENV DEBIAN_FRONTEND=noninteractive
+# ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+# ENV PATH="$JAVA_HOME/bin:$PATH"
 
 # Can be found scrolling down on this page:
 # https://developer.android.com/studio/index.html#command-tools
 ARG ANDROID_SDK_FILENAME=commandlinetools-linux-11076708_latest.zip
 WORKDIR /opt
 
-# The '--reinstall' combined with 'build-essentials' is necessary for cgo
-# compilation of go std libs to work. A terrible, arcane hack to solve arkane
-# cgo issues - almost fitting.
-RUN apt-get update && apt-get install --reinstall --no-install-recommends -y build-essential gcc unzip git gnupg python3
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      autogen \
+      automake \
+      autopoint \
+      bash \
+      bzip2 \
+      ca-certificates \
+      curl \
+      g++ \
+      git \
+      gnupg \
+      golang-go \
+      libc-dev \
+      make \
+      gettext \
+      libtool \
+      openjdk-21-jdk-headless \
+      pkg-config \
+      python3 \
+      rename \
+      shtool \
+      unzip \
+      wget && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install Android SDK manager
 RUN mkdir -p /opt/android-sdk && cd /opt/android-sdk && \
