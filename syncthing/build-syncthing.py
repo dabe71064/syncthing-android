@@ -141,7 +141,7 @@ def get_expected_go_version():
         raise RuntimeError("Could not find GO_VERSION in build-syncthing.yaml.")
 
     url = "https://go.dev/dl/?mode=json"
-    with urllib.request.urlopen(url) as resp:
+    with urlretrieve.urlopen(url) as resp:
         releases = json.load(resp)
 
     # Find recent release corresponding to base_version.
