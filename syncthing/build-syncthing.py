@@ -102,11 +102,52 @@ def change_permissions_recursive(path, mode):
         for file in [os.path.join(root, f) for f in files]:
             os.chmod(file, mode)
 
+def get_expected_go_version():
+    workflow_path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
+        'syncthing',
+        'src',
+        'github.com',
+        'syncthing',
+        'syncthing',
+        '.github',
+        'workflows',
+        'build-syncthing.yaml'
+    )
+
+    base_version = None
+    with open(workflow_path, 'r') as f:
+        for line in f:
+            if line.strip().startswith("GO_VERSION:"):
+                raw = line.split(":", 1)[1].strip().strip('"').strip("'")
+                # Beispiel: "~1.25.0" → "1.25"
+                if raw.startswith("~"):
+                    parts = raw[1:].split(".")
+                    base_version = ".".join(parts[0:2])  # "1.25"
+                else:
+                    base_version = raw
+                break
+
+    if not base_version:
+        raise RuntimeError("Could not find GO_VERSION in build-syncthing.yaml.")
+
+    url = "https://go.dev/dl/?mode=json"
+    with urllib.request.urlopen(url) as resp:
+        releases = json.load(resp)
+
+    # Find recent release corresponding to base_version.
+    for rel in releases:
+        v = rel["version"].lstrip("go")  # "go1.25.0" to "1.25.0"
+        if v.startswith(base_version + "."):
+            return v
+
+    raise RuntimeError(f"GO_VERSION: No latest patch level found corresponding to {base_version}")
+
 def get_go_version(go_binary):
     """Get the version of a Go binary"""
     try:
         result = subprocess.check_output([go_binary, 'version'], stderr=subprocess.STDOUT, timeout=10)
-        # Parse "go version go1.25.0 linux/amd64" -> "1.25.0"
+        # Parse "go version go1.25.0 linux/amd64" to "1.25.0"
         version_line = result.decode().strip()
         parts = version_line.split()
         if len(parts) >= 3 and parts[2].startswith('go'):
@@ -132,7 +173,7 @@ def install_go():
     go_build_dir = os.path.join(prerequisite_tools_dir, 'go')
     go_bin_path = os.path.join(go_build_dir, 'bin')
 
-    expected_version = "1.25.0"
+    expected_version = get_expected_go_version()
 
     # Check if we already have a built Go with correct version
     built_go = os.path.join(go_bin_path, 'go')
