@@ -223,7 +223,7 @@ def install_go():
     print('Building Go from source using system Go as bootstrap...')
     build_env = os.environ.copy()
     build_env['GOROOT_BOOTSTRAP'] = os.path.dirname(os.path.dirname(system_go))
-    if not os.path.isdir(os.path.join(build_env['GOROOT_BOOTSTRAP'], 'src')):
+    if not os.path.isdir(os.path.join(build_env['GOROOT_BOOTSTRAP'], 'src', 'encoding')):
         build_env['GOROOT_BOOTSTRAP'] = '/usr/lib/go'
         print('Override build_env:GOROOT_BOOTSTRAP using ', build_env['GOROOT_BOOTSTRAP'])
 
