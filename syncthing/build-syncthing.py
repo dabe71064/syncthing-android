@@ -103,6 +103,15 @@ def change_permissions_recursive(path, mode):
             os.chmod(file, mode)
 
 def get_expected_go_version():
+    import os
+    import re
+    import json
+
+    if sys.version_info[0] >= 3:
+        from urllib.request import urlretrieve
+    else:
+        from urllib import urlretrieve
+
     workflow_path = os.path.join(
         os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
         'syncthing',
@@ -120,7 +129,7 @@ def get_expected_go_version():
         for line in f:
             if line.strip().startswith("GO_VERSION:"):
                 raw = line.split(":", 1)[1].strip().strip('"').strip("'")
-                # Beispiel: "~1.25.0" → "1.25"
+                # "~1.25.0" to "1.25"
                 if raw.startswith("~"):
                     parts = raw[1:].split(".")
                     base_version = ".".join(parts[0:2])  # "1.25"
