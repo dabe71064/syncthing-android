@@ -1,9 +1,5 @@
 FROM debian:stable-slim
 
-# This is read by other scripts but no longer relevant here as we build
-# go from source in "build-syncthing.py".
-ENV GO_VERSION=1.25.0
-
 ENV DEBIAN_FRONTEND=noninteractive
 # ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 # ENV PATH="$JAVA_HOME/bin:$PATH"
