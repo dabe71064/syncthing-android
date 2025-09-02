@@ -179,6 +179,7 @@ def install_go():
     go_bin_path = os.path.join(go_build_dir, 'bin')
 
     expected_version = get_expected_go_version()
+    print('Required Go version:', expected_version)
 
     # Check if we already have a built Go with correct version
     built_go = os.path.join(go_bin_path, 'go')
@@ -198,8 +199,7 @@ def install_go():
     
     system_version = get_go_version(system_go)
     print('Found system Go version:', system_version, 'at:', system_go)
-    print('Required Go version:', expected_version)
-    
+
     if system_version == expected_version:
         print('System Go version matches required version. No build needed.')
         return
