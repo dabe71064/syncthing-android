@@ -30,9 +30,6 @@ Builds:
         libtool pkg-config rename shtool
     gradle:
       - yes
-    prebuild:
-      - sed -i -e '/signingConfig/,+2d' build.gradle.kts
-      - git update-index --skip-worktree build.gradle.kts
     scanignore:
       - syncthing/src/github.com/syncthing/syncthing/lib/model/testdata
     build:
