@@ -31,8 +31,7 @@ RUN apt-get update && \
       shtool \
       unzip \
       wget && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get clean
 
 # Add go to PATH.
 ENV GOROOT=/usr/lib/go
@@ -75,6 +74,17 @@ ADD . /opt/syncthing-android
 RUN find /opt/syncthing-android -name "*.sh" -exec sed -i 's/\r$//' {} \;
 RUN find /opt/syncthing-android -name "gradlew" -exec sed -i 's/\r$//' {} \;
 
+# Prebuild go and SyncthingNative
 RUN /opt/syncthing-android/docker/prebuild.sh
+
+# Remove bootstrap go
+RUN apt-get purge -y golang-go && \
+    apt-get autoremove -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Use built go
+ENV GOROOT=/opt/syncthing-android-prereq/go
+ENV PATH=$GOROOT/bin:$PATH
 
 WORKDIR /mnt
