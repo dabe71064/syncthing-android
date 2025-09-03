@@ -15,8 +15,8 @@ Repo: https://github.com/Catfriend1/syncthing-android.git
 Binaries: https://github.com/Catfriend1/syncthing-android/releases/download/v%v/com.github.catfriend1.syncthingfork_release_v%v.apk
 
 Builds:
-  - versionName: 2.0.4.0
-    versionCode: 2000400
+  - versionName: 2.0.5.0
+    versionCode: 2000500
     commit: 8ff0b5a86f2c9f49fa41cdfa2bfd27b932d96063
     subdir: app
     submodules: true
@@ -45,5 +45,5 @@ MaintainerNotes: |-
 AutoUpdateMode: Version
 UpdateCheckMode: Tags ^v2[a-z0-9.]*$
 UpdateCheckData: gradle/libs.versions.toml|version-code\s=\s"(\d+)"|.|version-name\s=\s"(.*)"
-CurrentVersion: 2.0.4.0
-CurrentVersionCode: 2000400
+CurrentVersion: 2.0.5.0
+CurrentVersionCode: 2000500
