@@ -17,7 +17,7 @@ Binaries: https://github.com/Catfriend1/syncthing-android/releases/download/v%v/
 Builds:
   - versionName: 2.0.6.0
     versionCode: 2000600
-    commit: 8ff0b5a86f2c9f49fa41cdfa2bfd27b932d96063
+    commit: 62186a96d74c07dec13cce220a5c21f4b63348e8
     subdir: app
     submodules: true
     sudo:
