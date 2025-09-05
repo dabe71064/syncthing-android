@@ -34,7 +34,9 @@ RUN apt-get update && \
       wget && \
     apt-get clean
 
+# Setup Android SDK.
 ENV ANDROID_HOME=/usr/lib/android-sdk
+RUN yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null
 
 # Add go to PATH.
 ENV GOROOT=/usr/lib/go
