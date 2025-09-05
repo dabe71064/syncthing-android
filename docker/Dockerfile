@@ -50,9 +50,6 @@ ARG SDKMANAGER="${ANDROID_HOME}/cmdline-tools/bin/sdkmanager --sdk_root=${ANDROI
 # Accept the SDK license, as we can't install packages otherwise
 RUN yes | $SDKMANAGER --licenses > /dev/null
 
-# Enable prebuild mode
-ENV SYNCTHING_ANDROID_PREBUILT=1
-
 # Set location of go cache
 ENV GOCACHE=/opt/gocache
 
@@ -66,7 +63,12 @@ RUN find /opt/syncthing-android -name "*.sh" -exec sed -i 's/\r$//' {} \;
 RUN find /opt/syncthing-android -name "gradlew" -exec sed -i 's/\r$//' {} \;
 
 # Prebuild go and SyncthingNative
-RUN /opt/syncthing-android/docker/prebuild.sh
+RUN cd /opt/syncthing-android && \
+    ./gradlew --no-daemon buildNative && \
+    ./gradlew --no-daemon lintDebug
+
+# Clean up build sources
+RUN rm -rf /opt/syncthing-android
 
 # Remove bootstrap go
 RUN apt-get purge -y golang-go && \
