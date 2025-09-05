@@ -42,6 +42,11 @@ fun verifySyncthingNativeVersionMatchesApp(execOps: ExecOperations) {
     }
 }
 
+fun detectPythonBinary(): String {
+    val osName = System.getProperty("os.name").lowercase()
+    return if (osName.contains("windows")) "python" else "python3"
+}
+
 tasks.register("buildNative") {
     group = "build"
     description = "Builds native Syncthing binaries"
@@ -70,10 +75,12 @@ tasks.register("buildNative") {
             putAll(env)
         }
 
+        val pythonBinary = detectPythonBinary()
+
         execOps.exec {
             setEnvironment(fullEnv)
             setWorkingDir(workingDir)
-            commandLine("python", "-u", "./build-syncthing.py")
+            commandLine(pythonBinary, "-u", "./build-syncthing.py")
         }
     }
 }
