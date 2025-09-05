@@ -85,6 +85,9 @@ tasks.register("buildNative") {
     }
 }
 
+/**
+ * Use separate task instead of standard clean(), so these folders aren't deleted by `gradle clean`.
+ */
 tasks.register<Delete>("cleanNative") {
     delete(
         file("$projectDir/../app/src/main/jniLibs/"),
