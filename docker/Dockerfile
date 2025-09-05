@@ -8,7 +8,7 @@ ARG ANDROID_SDK_FILENAME=commandlinetools-linux-11076708_latest.zip
 WORKDIR /opt
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+    apt-get install -y -q --no-install-recommends \
       android-sdk \
       autogen \
       automake \
