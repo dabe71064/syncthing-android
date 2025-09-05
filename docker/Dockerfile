@@ -36,6 +36,7 @@ RUN apt-get update && \
 
 # Setup Android SDK.
 ENV ANDROID_HOME=/usr/lib/android-sdk
+RUN find / | grep sdkmanager
 RUN yes | /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null
 
 # Add go to PATH.
