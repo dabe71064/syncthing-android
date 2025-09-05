@@ -47,7 +47,7 @@ ENV ANDROID_HOME=/opt/android-sdk
 #ARG SDKMANAGER="${ANDROID_HOME}/cmdline-tools/bin/sdkmanager --sdk_root=${ANDROID_HOME}"
 
 # Accept the SDK license, as we can't install packages otherwise
-RUN yes | $SDKMANAGER --licenses > /dev/null
+#RUN yes | $SDKMANAGER --licenses > /dev/null
 
 # Install Android SDK
 # ENV TARGET_SDK_VERSION=36
