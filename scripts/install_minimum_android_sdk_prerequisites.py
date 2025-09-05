@@ -167,10 +167,4 @@ else:
     print('[INFO] sdkmanager --licenses')
     os.system('yes | sdkmanager --licenses')
 #
-print('[INFO] sdk_manager_bin platforms;android-' + ANDROID_SDK_VERSION)
-subprocess.check_call([sdk_manager_bin, 'platforms;android-' + ANDROID_SDK_VERSION])
-#
-print('[INFO] sdk_manager_bin build-tools;' + ANDROID_SDK_VERSION + '.0.0')
-subprocess.check_call([sdk_manager_bin, 'build-tools;' + ANDROID_SDK_VERSION + '.0.0'])
-#
 print('Done.')
