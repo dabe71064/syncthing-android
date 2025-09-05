@@ -49,12 +49,9 @@ ARG SDKMANAGER="${ANDROID_HOME}/cmdline-tools/bin/sdkmanager --sdk_root=${ANDROI
 # Accept the SDK license, as we can't install packages otherwise
 RUN yes | $SDKMANAGER --licenses > /dev/null
 
-# NDK version
-ENV NDK_VERSION=28.0.13004108
+# Install Android SDK
 ENV TARGET_SDK_VERSION=36
-
-# Install other android packages, including NDK
-RUN $SDKMANAGER platform-tools "build-tools;${TARGET_SDK_VERSION}.0.0" "platforms;android-${TARGET_SDK_VERSION}" "extras;android;m2repository" "ndk;${NDK_VERSION}"
+RUN $SDKMANAGER platform-tools "build-tools;${TARGET_SDK_VERSION}.0.0" "platforms;android-${TARGET_SDK_VERSION}" "extras;android;m2repository"
 
 # Accept licenses of newly installed packages
 RUN yes | $SDKMANAGER --licenses
