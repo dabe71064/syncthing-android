@@ -34,6 +34,8 @@ RUN apt-get update && \
       wget && \
     apt-get clean
 
+ENV ANDROID_HOME=/usr/lib/android-sdk
+
 # Add go to PATH.
 ENV GOROOT=/usr/lib/go
 ENV PATH=$GOROOT/bin:$PATH
