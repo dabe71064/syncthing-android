@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Can be found scrolling down on this page:
 # https://developer.android.com/studio/index.html#command-tools
-ARG ANDROID_SDK_FILENAME=commandlinetools-linux-11076708_latest.zip
+#ARG ANDROID_SDK_FILENAME=commandlinetools-linux-11076708_latest.zip
 WORKDIR /opt
 
 RUN apt-get update && \
@@ -36,6 +36,7 @@ RUN apt-get update && \
 
 # Setup Android SDK.
 ENV ANDROID_HOME=/usr/lib/android-sdk
+ARG ANDROID_HOME=/usr/lib/android-sdk
 RUN yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null
 
 # Add go to PATH.
