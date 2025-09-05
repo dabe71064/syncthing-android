@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Can be found scrolling down on this page:
 # https://developer.android.com/studio/index.html#command-tools
-#ARG ANDROID_SDK_FILENAME=commandlinetools-linux-11076708_latest.zip
+ARG ANDROID_SDK_FILENAME=commandlinetools-linux-11076708_latest.zip
 WORKDIR /opt
 
 RUN apt-get update && \
@@ -34,26 +34,21 @@ RUN apt-get update && \
       wget && \
     apt-get clean
 
-# Setup Android SDK.
-ENV ANDROID_HOME=/usr/lib/android-sdk
-RUN find / | grep sdkmanager
-RUN yes | /usr/lib/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null
-
 # Add go to PATH.
 ENV GOROOT=/usr/lib/go
 ENV PATH=$GOROOT/bin:$PATH
 
 # Install Android SDK manager
-#RUN mkdir -p /opt/android-sdk && cd /opt/android-sdk && \
-#    wget -q https://dl.google.com/android/repository/${ANDROID_SDK_FILENAME} && \
-#    unzip -q ${ANDROID_SDK_FILENAME} && \
-#    rm ${ANDROID_SDK_FILENAME}
-# ENV ANDROID_HOME=/opt/android-sdk
+RUN mkdir -p /opt/android-sdk && cd /opt/android-sdk && \
+    wget -q https://dl.google.com/android/repository/${ANDROID_SDK_FILENAME} && \
+    unzip -q ${ANDROID_SDK_FILENAME} && \
+    rm ${ANDROID_SDK_FILENAME}
+ENV ANDROID_HOME=/opt/android-sdk
 
-#ARG SDKMANAGER="${ANDROID_HOME}/cmdline-tools/bin/sdkmanager --sdk_root=${ANDROID_HOME}"
+ARG SDKMANAGER="${ANDROID_HOME}/cmdline-tools/bin/sdkmanager --sdk_root=${ANDROID_HOME}"
 
 # Accept the SDK license, as we can't install packages otherwise
-#RUN yes | $SDKMANAGER --licenses > /dev/null
+RUN yes | $SDKMANAGER --licenses > /dev/null
 
 # Install Android SDK
 # ENV TARGET_SDK_VERSION=36
