@@ -16,7 +16,6 @@ PLATFORM_DIRS = {
 FORCE_DISPLAY_SYNCTHING_VERSION = ''
 FILENAME_SYNCTHING_BINARY = 'libsyncthingnative.so'
 
-# The values here must correspond with those in ../docker/prebuild.sh
 BUILD_TARGETS = [
     {
         'arch': 'arm',
