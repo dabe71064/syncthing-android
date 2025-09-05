@@ -38,23 +38,23 @@ ENV GOROOT=/usr/lib/go
 ENV PATH=$GOROOT/bin:$PATH
 
 # Install Android SDK manager
-RUN mkdir -p /opt/android-sdk && cd /opt/android-sdk && \
-    wget -q https://dl.google.com/android/repository/${ANDROID_SDK_FILENAME} && \
-    unzip -q ${ANDROID_SDK_FILENAME} && \
-    rm ${ANDROID_SDK_FILENAME}
+#RUN mkdir -p /opt/android-sdk && cd /opt/android-sdk && \
+#    wget -q https://dl.google.com/android/repository/${ANDROID_SDK_FILENAME} && \
+#    unzip -q ${ANDROID_SDK_FILENAME} && \
+#    rm ${ANDROID_SDK_FILENAME}
 ENV ANDROID_HOME=/opt/android-sdk
 
-ARG SDKMANAGER="${ANDROID_HOME}/cmdline-tools/bin/sdkmanager --sdk_root=${ANDROID_HOME}"
+#ARG SDKMANAGER="${ANDROID_HOME}/cmdline-tools/bin/sdkmanager --sdk_root=${ANDROID_HOME}"
 
 # Accept the SDK license, as we can't install packages otherwise
 RUN yes | $SDKMANAGER --licenses > /dev/null
 
 # Install Android SDK
-ENV TARGET_SDK_VERSION=36
-RUN $SDKMANAGER platform-tools "build-tools;${TARGET_SDK_VERSION}.0.0" "platforms;android-${TARGET_SDK_VERSION}" "extras;android;m2repository"
+# ENV TARGET_SDK_VERSION=36
+# RUN $SDKMANAGER platform-tools "build-tools;${TARGET_SDK_VERSION}.0.0" "platforms;android-${TARGET_SDK_VERSION}" "extras;android;m2repository"
 
 # Accept licenses of newly installed packages
-RUN yes | $SDKMANAGER --licenses
+# RUN yes | $SDKMANAGER --licenses
 
 # Enable prebuild mode
 ENV SYNCTHING_ANDROID_PREBUILT=1
