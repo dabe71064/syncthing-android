@@ -9,6 +9,7 @@ WORKDIR /opt
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+      android-sdk \
       autogen \
       automake \
       autopoint \
@@ -42,7 +43,7 @@ ENV PATH=$GOROOT/bin:$PATH
 #    wget -q https://dl.google.com/android/repository/${ANDROID_SDK_FILENAME} && \
 #    unzip -q ${ANDROID_SDK_FILENAME} && \
 #    rm ${ANDROID_SDK_FILENAME}
-ENV ANDROID_HOME=/opt/android-sdk
+# ENV ANDROID_HOME=/opt/android-sdk
 
 #ARG SDKMANAGER="${ANDROID_HOME}/cmdline-tools/bin/sdkmanager --sdk_root=${ANDROID_HOME}"
 
