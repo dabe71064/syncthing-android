@@ -31,10 +31,6 @@ Builds:
       - yes
     scanignore:
       - syncthing/src/github.com/syncthing/syncthing/lib/model/testdata
-    build:
-      - export ndkversion=$(grep "ndkVersionShared" ../build.gradle.kts | cut -d '"'
-        -f 4)
-      - sdkmanager "ndk;$ndkversion"
 
 AllowedAPKSigningKeys: d374b8de5057013143c7d1515a015598c2df403be8160cae01a58c227e6e86aa
 
