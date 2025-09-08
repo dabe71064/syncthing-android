@@ -1,5 +1,7 @@
 FROM debian:stable-slim
 
+ENV GO_VERSION=1.24.7
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Can be found scrolling down on this page:
