@@ -1075,6 +1075,7 @@ public class FileUtils {
         Intent intent;
         switch(fileExtension) {
             case "apk":
+                // Requires permission in AndroidManifest.xml
                 intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
                 break;
             default:

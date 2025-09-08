@@ -1,2 +1,3 @@
-## What's Changed
-* Fixed UI crash if index sequence number for a folder exceeds a limit. This affected a minority of users, especially Syncthing-Lite users. But if it happened, users were unable to export config and could no longer open the app.
+Syncthing-Fork v2 has arrived on F-Droid and GitHub 🎉.
+Please read https://github.com/Catfriend1/syncthing-android/blob/main/wiki/Important-News.md for instructions to do the upgrade.
+Short summary: Settings - Export, uninstall v1 app, install v2 app, Settings - Import
