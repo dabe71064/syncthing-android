@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -194,9 +193,10 @@ public class DeviceListFragment extends ListFragment implements SyncthingService
         mAdapter.clear();
         Collections.sort(devices, DEVICES_COMPARATOR);
         // Convert Device objects to DisplayableDevice objects
-        List<DisplayableDevice> displayableDevices = devices.stream()
-                .map(DisplayableDevice::new)
-                .collect(Collectors.toList());
+        List<DisplayableDevice> displayableDevices = new ArrayList<>();
+        for (Device device : devices) {
+            displayableDevices.add(new DisplayableDevice(device));
+        }
         mAdapter.addAll(displayableDevices);
         mAdapter.notifyDataSetChanged();
         setListShown(true);

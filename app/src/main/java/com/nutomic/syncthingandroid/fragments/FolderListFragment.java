@@ -30,7 +30,6 @@ import com.nutomic.syncthingandroid.views.FoldersAdapter;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -174,9 +173,10 @@ public class FolderListFragment extends ListFragment implements SyncthingService
         mAdapter.setNotifyOnChange(false);
         mAdapter.clear();
         // Convert Folder objects to DisplayableFolder objects
-        List<DisplayableFolder> displayableFolders = folders.stream()
-                .map(DisplayableFolder::new)
-                .collect(Collectors.toList());
+        List<DisplayableFolder> displayableFolders = new ArrayList<>();
+        for (Folder folder : folders) {
+            displayableFolders.add(new DisplayableFolder(folder));
+        }
         mAdapter.addAll(displayableFolders);
         mAdapter.notifyDataSetChanged();
         setListShown(true);
