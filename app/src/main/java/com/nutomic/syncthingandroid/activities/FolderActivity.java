@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -23,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -174,10 +176,33 @@ public class FolderActivity extends SyncthingActivity {
                 SwitchCompat switchView = (SwitchCompat) deviceView.getChildAt(0);
                 SharedWithDevice device = mFolder.getDevice(((SharedWithDevice) switchView.getTag()).deviceID);
                 if (device != null) {
-                    EditText encryptPassView = (EditText) deviceView.getChildAt(1);
+                    EditText encryptPassView = deviceView.findViewById(R.id.device_encryptionPassword);
                     String newEncryptionPassword = encryptPassView.getText().toString();
                     if (!device.encryptionPassword.equals(newEncryptionPassword)) {
                         device.encryptionPassword = newEncryptionPassword;
+                        
+                        // Update trust status UI when password changes
+                        LinearLayout trustStatusContainer = deviceView.findViewById(R.id.trust_status_container);
+                        TextView trustStatusLabel = deviceView.findViewById(R.id.trust_status_label);
+                        ImageButton passwordVisibilityToggle = deviceView.findViewById(R.id.password_visibility_toggle);
+                        LinearLayout passwordContainer = deviceView.findViewById(R.id.password_container);
+                        
+                        // Find device info
+                        RestApi restApi = getApi();
+                        List<Device> devicesList = mConfig.getDevices(restApi, false);
+                        Device deviceInfo = null;
+                        for (Device dev : devicesList) {
+                            if (dev.deviceID.equals(device.deviceID)) {
+                                deviceInfo = dev;
+                                break;
+                            }
+                        }
+                        
+                        if (deviceInfo != null) {
+                            updateTrustStatusUI(trustStatusContainer, trustStatusLabel, passwordVisibilityToggle, 
+                                              passwordContainer, encryptPassView, device, deviceInfo);
+                        }
+                        
                         mFolderNeedsToUpdate = true;
                     }
                 }
@@ -217,13 +242,42 @@ public class FolderActivity extends SyncthingActivity {
             } else if (id == R.id.device_toggle) {
                 SharedWithDevice device = (SharedWithDevice) view.getTag();
 
-                // Loop through devices the folder is shared to and show/hide encryptionPassword UI.
+                // Loop through devices the folder is shared to and show/hide trust status and password UI.
                 for (int i = 0; i < mDevicesContainer.getChildCount(); i++) {
                     LinearLayout deviceView = (LinearLayout) mDevicesContainer.getChildAt(i);
                     SwitchCompat switchView = (SwitchCompat) deviceView.getChildAt(0);
                     if (device == ((SharedWithDevice) switchView.getTag())) {
-                        EditText encryptPassView = (EditText) deviceView.getChildAt(1);
-                        encryptPassView.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                        LinearLayout trustStatusContainer = deviceView.findViewById(R.id.trust_status_container);
+                        LinearLayout passwordContainer = deviceView.findViewById(R.id.password_container);
+                        TextView trustStatusLabel = deviceView.findViewById(R.id.trust_status_label);
+                        ImageButton passwordVisibilityToggle = deviceView.findViewById(R.id.password_visibility_toggle);
+                        EditText encryptPassView = deviceView.findViewById(R.id.device_encryptionPassword);
+                        
+                        if (isChecked) {
+                            SharedWithDevice sharedDevice = new SharedWithDevice();
+                            sharedDevice.deviceID = device.deviceID;
+                            sharedDevice.introducedBy = device.introducedBy;
+                            sharedDevice.encryptionPassword = "";
+                            
+                            // Find device info for display name
+                            RestApi restApi = getApi();
+                            List<Device> devicesList = mConfig.getDevices(restApi, false);
+                            Device deviceInfo = null;
+                            for (Device dev : devicesList) {
+                                if (dev.deviceID.equals(device.deviceID)) {
+                                    deviceInfo = dev;
+                                    break;
+                                }
+                            }
+                            
+                            if (deviceInfo != null) {
+                                updateTrustStatusUI(trustStatusContainer, trustStatusLabel, passwordVisibilityToggle, 
+                                                  passwordContainer, encryptPassView, sharedDevice, deviceInfo);
+                            }
+                        } else {
+                            trustStatusContainer.setVisibility(View.GONE);
+                            passwordContainer.setVisibility(View.GONE);
+                        }
                         break;
                     }
                 }
@@ -819,14 +873,117 @@ public class FolderActivity extends SyncthingActivity {
         switchView.setTag(sharedWithDevice);
         switchView.setOnCheckedChangeListener(mCheckedListener);
 
-        EditText encryptPassView = (EditText) deviceView.getChildAt(1);
+        // Get references to the new UI elements
+        LinearLayout trustStatusContainer = deviceView.findViewById(R.id.trust_status_container);
+        TextView trustStatusLabel = deviceView.findViewById(R.id.trust_status_label);
+        ImageButton passwordVisibilityToggle = deviceView.findViewById(R.id.password_visibility_toggle);
+        LinearLayout passwordContainer = deviceView.findViewById(R.id.password_container);
+        EditText encryptPassView = deviceView.findViewById(R.id.device_encryptionPassword);
+
         encryptPassView.removeTextChangedListener(mTextWatcher);
-        if (mFolder.getDevice(device.deviceID) != null) {
-            encryptPassView.setText(mFolder.getDevice(device.deviceID).encryptionPassword);
+
+        SharedWithDevice existingDevice = mFolder.getDevice(device.deviceID);
+        if (existingDevice != null) {
+            encryptPassView.setText(existingDevice.encryptionPassword);
+            updateTrustStatusUI(trustStatusContainer, trustStatusLabel, passwordVisibilityToggle, 
+                              passwordContainer, encryptPassView, existingDevice, device);
         } else {
-            encryptPassView.setVisibility(View.GONE);
+            trustStatusContainer.setVisibility(View.GONE);
+            passwordContainer.setVisibility(View.GONE);
         }
+
+        // Set click listeners
+        trustStatusContainer.setOnClickListener(v -> onTrustStatusClick(device, trustStatusContainer, 
+                                                                       trustStatusLabel, passwordVisibilityToggle, 
+                                                                       passwordContainer, encryptPassView));
+        passwordVisibilityToggle.setOnClickListener(v -> onPasswordVisibilityToggle(existingDevice));
+
         encryptPassView.addTextChangedListener(mTextWatcher);
+    }
+
+    private void updateTrustStatusUI(LinearLayout trustStatusContainer, TextView trustStatusLabel, 
+                                   ImageButton passwordVisibilityToggle, LinearLayout passwordContainer, 
+                                   EditText encryptPassView, SharedWithDevice device, Device deviceInfo) {
+        boolean hasPassword = device != null && !TextUtils.isEmpty(device.encryptionPassword);
+        
+        trustStatusContainer.setVisibility(View.VISIBLE);
+        passwordContainer.setVisibility(View.VISIBLE);
+        
+        if (hasPassword) {
+            trustStatusLabel.setText(R.string.device_untrusted_label);
+            passwordVisibilityToggle.setVisibility(View.VISIBLE);
+            passwordVisibilityToggle.setImageResource(R.drawable.ic_visibility_off_24dp);
+        } else {
+            trustStatusLabel.setText(R.string.device_trusted_label);
+            passwordVisibilityToggle.setVisibility(View.GONE);
+        }
+    }
+
+    private void onTrustStatusClick(Device device, LinearLayout trustStatusContainer, 
+                                  TextView trustStatusLabel, ImageButton passwordVisibilityToggle, 
+                                  LinearLayout passwordContainer, EditText encryptPassView) {
+        SharedWithDevice sharedDevice = mFolder.getDevice(device.deviceID);
+        if (sharedDevice == null) return;
+
+        boolean hasPassword = !TextUtils.isEmpty(sharedDevice.encryptionPassword);
+        
+        if (hasPassword) {
+            // Show confirmation dialog to remove password
+            new AlertDialog.Builder(this)
+                .setTitle(R.string.confirm_remove_encryption_password_title)
+                .setMessage(R.string.confirm_remove_encryption_password_message)
+                .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                    sharedDevice.encryptionPassword = "";
+                    encryptPassView.setText("");
+                    updateTrustStatusUI(trustStatusContainer, trustStatusLabel, passwordVisibilityToggle, 
+                                      passwordContainer, encryptPassView, sharedDevice, device);
+                    mFolderNeedsToUpdate = true;
+                })
+                .setNegativeButton(android.R.string.no, null)
+                .show();
+        } else {
+            // Show password input dialog
+            showPasswordInputDialog(device, trustStatusContainer, trustStatusLabel, 
+                                  passwordVisibilityToggle, passwordContainer, encryptPassView);
+        }
+    }
+
+    private void showPasswordInputDialog(Device device, LinearLayout trustStatusContainer, 
+                                       TextView trustStatusLabel, ImageButton passwordVisibilityToggle, 
+                                       LinearLayout passwordContainer, EditText encryptPassView) {
+        EditText passwordInput = new EditText(this);
+        passwordInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        passwordInput.setHint(R.string.password_hint);
+
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.input_encryption_password_title)
+            .setMessage(R.string.input_encryption_password_message)
+            .setView(passwordInput)
+            .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                String password = passwordInput.getText().toString().trim();
+                if (!TextUtils.isEmpty(password)) {
+                    SharedWithDevice sharedDevice = mFolder.getDevice(device.deviceID);
+                    if (sharedDevice != null) {
+                        sharedDevice.encryptionPassword = password;
+                        encryptPassView.setText(password);
+                        updateTrustStatusUI(trustStatusContainer, trustStatusLabel, passwordVisibilityToggle, 
+                                          passwordContainer, encryptPassView, sharedDevice, device);
+                        mFolderNeedsToUpdate = true;
+                    }
+                }
+            })
+            .setNegativeButton(android.R.string.cancel, null)
+            .show();
+    }
+
+    private void onPasswordVisibilityToggle(SharedWithDevice device) {
+        if (device == null || TextUtils.isEmpty(device.encryptionPassword)) return;
+
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.show_password_title)
+            .setMessage(device.encryptionPassword)
+            .setPositiveButton(android.R.string.ok, null)
+            .show();
     }
 
     private void onSave() {
