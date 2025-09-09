@@ -144,35 +144,8 @@ public class FolderActivity extends SyncthingActivity {
     private boolean mFolderNeedsToUpdate = false;
     private boolean mIgnoreListNeedsToUpdate = false;
 
-    // Cache for device list to avoid redundant API calls
-    private List<Device> mCachedDevicesList = null;
-
     private Dialog mDeleteDialog;
     private Dialog mDiscardDialog;
-
-    /**
-     * Gets the device list, using cache if available to avoid redundant API calls
-     */
-    private List<Device> getCachedDevicesList() {
-        if (mCachedDevicesList == null) {
-            RestApi restApi = getApi();
-            mCachedDevicesList = mConfig.getDevices(restApi, false);
-        }
-        return mCachedDevicesList;
-    }
-    
-    /**
-     * Finds device info by device ID from cached device list
-     */
-    private Device findDeviceInfo(String deviceID) {
-        List<Device> devicesList = getCachedDevicesList();
-        for (Device dev : devicesList) {
-            if (dev.deviceID.equals(deviceID)) {
-                return dev;
-            }
-        }
-        return null;
-    }
 
     private OnBackPressedCallback mBackPressedCallback = new OnBackPressedCallback(true) {
         @Override
@@ -216,12 +189,8 @@ public class FolderActivity extends SyncthingActivity {
                         ImageButton passwordVisibilityToggle = deviceContainer.findViewById(R.id.password_visibility_toggle);
                         LinearLayout passwordContainer = deviceContainer.findViewById(R.id.password_container);
                         
-                        // Find device info using cached method
-                        Device deviceInfo = findDeviceInfo(device.deviceID);
-                        if (deviceInfo != null) {
-                            updateTrustStatusUI(trustStatusContainer, trustStatusLabel, passwordVisibilityToggle, 
-                                              passwordContainer, encryptPassView, device, deviceInfo);
-                        }
+                        updateTrustStatusUI(trustStatusContainer, trustStatusLabel, passwordVisibilityToggle, 
+                                          passwordContainer, encryptPassView, device);
                         
                         mFolderNeedsToUpdate = true;
                     }
@@ -280,12 +249,8 @@ public class FolderActivity extends SyncthingActivity {
                             sharedDevice.introducedBy = device.introducedBy;
                             sharedDevice.encryptionPassword = "";
                             
-                            // Find device info using cached method
-                            Device deviceInfo = findDeviceInfo(device.deviceID);
-                            if (deviceInfo != null) {
-                                updateTrustStatusUI(trustStatusContainer, trustStatusLabel, passwordVisibilityToggle, 
-                                                  passwordContainer, encryptPassView, sharedDevice, deviceInfo);
-                            }
+                            updateTrustStatusUI(trustStatusContainer, trustStatusLabel, passwordVisibilityToggle, 
+                                              passwordContainer, encryptPassView, sharedDevice);
                         } else {
                             trustStatusContainer.setVisibility(View.GONE);
                             passwordContainer.setVisibility(View.GONE);
@@ -645,8 +610,8 @@ public class FolderActivity extends SyncthingActivity {
         mCustomSyncConditionsDialog.setEnabled(mCustomSyncConditionsSwitch.isChecked());
 
         // Populate devicesList.
-        mCachedDevicesList = null; // Clear cache to get fresh data
-        List<Device> devicesList = getCachedDevicesList();
+        RestApi restApi = getApi();
+        List<Device> devicesList = mConfig.getDevices(restApi, false);
         mDevicesContainer.removeAllViews();
         if (devicesList.isEmpty()) {
             addEmptyDeviceListView();
@@ -900,7 +865,7 @@ public class FolderActivity extends SyncthingActivity {
         if (existingDevice != null) {
             encryptPassView.setText(existingDevice.encryptionPassword);
             updateTrustStatusUI(trustStatusContainer, trustStatusLabel, passwordVisibilityToggle, 
-                              passwordContainer, encryptPassView, existingDevice, device);
+                              passwordContainer, encryptPassView, existingDevice);
         } else {
             trustStatusContainer.setVisibility(View.GONE);
             passwordContainer.setVisibility(View.GONE);
@@ -921,7 +886,7 @@ public class FolderActivity extends SyncthingActivity {
 
     private void updateTrustStatusUI(LinearLayout trustStatusContainer, TextView trustStatusLabel, 
                                    ImageButton passwordVisibilityToggle, LinearLayout passwordContainer, 
-                                   EditText encryptPassView, SharedWithDevice device, Device deviceInfo) {
+                                   EditText encryptPassView, SharedWithDevice device) {
         boolean hasPassword = device != null && !TextUtils.isEmpty(device.encryptionPassword);
         
         trustStatusContainer.setVisibility(View.VISIBLE);
@@ -962,7 +927,7 @@ public class FolderActivity extends SyncthingActivity {
                     sharedDevice.encryptionPassword = "";
                     encryptPassView.setText("");
                     updateTrustStatusUI(trustStatusContainer, trustStatusLabel, passwordVisibilityToggle, 
-                                      passwordContainer, encryptPassView, sharedDevice, device);
+                                      passwordContainer, encryptPassView, sharedDevice);
                     mFolderNeedsToUpdate = true;
                 })
                 .setNegativeButton(android.R.string.no, null)
@@ -993,7 +958,7 @@ public class FolderActivity extends SyncthingActivity {
                         sharedDevice.encryptionPassword = password;
                         encryptPassView.setText(password);
                         updateTrustStatusUI(trustStatusContainer, trustStatusLabel, passwordVisibilityToggle, 
-                                          passwordContainer, encryptPassView, sharedDevice, device);
+                                          passwordContainer, encryptPassView, sharedDevice);
                         mFolderNeedsToUpdate = true;
                     }
                 }
