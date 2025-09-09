@@ -1593,4 +1593,24 @@ public class RestApi {
         }
         LogV("*** Multiple line log END ***");
     }
+
+    /**
+     * Notifies listeners that pending devices have changed.
+     * This triggers UI refresh for immediate display of pending devices.
+     */
+    public void notifyPendingDeviceChanged() {
+        if (mOnConfigChangedListener != null) {
+            mOnConfigChangedListener.onConfigChanged();
+        }
+    }
+
+    /**
+     * Notifies listeners that pending folders have changed.
+     * This triggers UI refresh for immediate display of pending folders.
+     */
+    public void notifyPendingFolderChanged() {
+        if (mOnConfigChangedListener != null) {
+            mOnConfigChangedListener.onConfigChanged();
+        }
+    }
 }
