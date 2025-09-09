@@ -19,6 +19,7 @@ import com.nutomic.syncthingandroid.activities.FolderActivity;
 import com.nutomic.syncthingandroid.activities.MainActivity;
 import com.nutomic.syncthingandroid.activities.SyncthingActivity;
 import com.nutomic.syncthingandroid.model.Folder;
+import com.nutomic.syncthingandroid.model.DisplayableFolder;
 import com.nutomic.syncthingandroid.service.AppPrefs;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.RestApi;
@@ -28,6 +29,8 @@ import com.nutomic.syncthingandroid.util.ConfigXml.OpenConfigException;
 import com.nutomic.syncthingandroid.views.FoldersAdapter;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -170,7 +173,11 @@ public class FolderListFragment extends ListFragment implements SyncthingService
         // Prevent scroll position reset due to list update from clear().
         mAdapter.setNotifyOnChange(false);
         mAdapter.clear();
-        mAdapter.addAll(folders);
+        // Convert Folder objects to DisplayableFolder objects
+        List<DisplayableFolder> displayableFolders = folders.stream()
+                .map(DisplayableFolder::new)
+                .collect(Collectors.toList());
+        mAdapter.addAll(displayableFolders);
         mAdapter.notifyDataSetChanged();
         setListShown(true);
     }
@@ -179,7 +186,7 @@ public class FolderListFragment extends ListFragment implements SyncthingService
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         Intent intent = new Intent(getActivity(), FolderActivity.class)
                 .putExtra(FolderActivity.EXTRA_IS_CREATE, false)
-                .putExtra(FolderActivity.EXTRA_FOLDER_ID, mAdapter.getItem(i).id);
+                .putExtra(FolderActivity.EXTRA_FOLDER_ID, mAdapter.getItem(i).getFolderId());
         startActivity(intent);
     }
 

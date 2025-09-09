@@ -117,19 +117,19 @@ public class DevicesAdapter extends ArrayAdapter<DisplayableDevice> {
         if (displayableDevice.isPending()) {
             // For pending devices, show minimal information
             holder.lastSeen.setText(mContext.getString(R.string.device_last_seen, 
-                mContext.getString(R.string.device_pending)));
+                mContext.getString(R.string.device_state_pending)));
             holder.sharedFoldersTitle.setText(R.string.device_state_pending);
             holder.sharedFolders.setVisibility(GONE);
             holder.progressBar.setVisibility(GONE);
             holder.rateInOutView.setVisibility(GONE);
             holder.status.setVisibility(VISIBLE);
-            holder.status.setText(R.string.device_pending);
+            holder.status.setText(R.string.device_state_pending);
             holder.status.setTextColor(ContextCompat.getColor(getContext(), R.color.light_grey));
             
             // Show address if available
             String address = displayableDevice.getAddress();
             if (!address.isEmpty()) {
-                holder.status.setText(mContext.getString(R.string.device_pending) + " (" + address + ")");
+                holder.status.setText(mContext.getString(R.string.device_state_pending) + " (" + address + ")");
             }
             return;
         }
