@@ -144,8 +144,35 @@ public class FolderActivity extends SyncthingActivity {
     private boolean mFolderNeedsToUpdate = false;
     private boolean mIgnoreListNeedsToUpdate = false;
 
+    // Cache for device list to avoid redundant API calls
+    private List<Device> mCachedDevicesList = null;
+
     private Dialog mDeleteDialog;
     private Dialog mDiscardDialog;
+
+    /**
+     * Gets the device list, using cache if available to avoid redundant API calls
+     */
+    private List<Device> getCachedDevicesList() {
+        if (mCachedDevicesList == null) {
+            RestApi restApi = getApi();
+            mCachedDevicesList = mConfig.getDevices(restApi, false);
+        }
+        return mCachedDevicesList;
+    }
+    
+    /**
+     * Finds device info by device ID from cached device list
+     */
+    private Device findDeviceInfo(String deviceID) {
+        List<Device> devicesList = getCachedDevicesList();
+        for (Device dev : devicesList) {
+            if (dev.deviceID.equals(deviceID)) {
+                return dev;
+            }
+        }
+        return null;
+    }
 
     private OnBackPressedCallback mBackPressedCallback = new OnBackPressedCallback(true) {
         @Override
@@ -173,31 +200,24 @@ public class FolderActivity extends SyncthingActivity {
                 }
                 LinearLayout deviceView = (LinearLayout) mDevicesContainer.getChildAt(i);
 
-                SwitchCompat switchView = (SwitchCompat) deviceView.getChildAt(0);
+                // Find the device container and then the switch within it
+                LinearLayout deviceContainer = deviceView.findViewById(R.id.device_container);
+                SwitchCompat switchView = deviceContainer.findViewById(R.id.device_toggle);
                 SharedWithDevice device = mFolder.getDevice(((SharedWithDevice) switchView.getTag()).deviceID);
                 if (device != null) {
-                    EditText encryptPassView = deviceView.findViewById(R.id.device_encryptionPassword);
+                    EditText encryptPassView = deviceContainer.findViewById(R.id.device_encryptionPassword);
                     String newEncryptionPassword = encryptPassView.getText().toString();
                     if (!device.encryptionPassword.equals(newEncryptionPassword)) {
                         device.encryptionPassword = newEncryptionPassword;
                         
                         // Update trust status UI when password changes
-                        LinearLayout trustStatusContainer = deviceView.findViewById(R.id.trust_status_container);
-                        TextView trustStatusLabel = deviceView.findViewById(R.id.trust_status_label);
-                        ImageButton passwordVisibilityToggle = deviceView.findViewById(R.id.password_visibility_toggle);
-                        LinearLayout passwordContainer = deviceView.findViewById(R.id.password_container);
+                        LinearLayout trustStatusContainer = deviceContainer.findViewById(R.id.trust_status_container);
+                        TextView trustStatusLabel = deviceContainer.findViewById(R.id.trust_status_label);
+                        ImageButton passwordVisibilityToggle = deviceContainer.findViewById(R.id.password_visibility_toggle);
+                        LinearLayout passwordContainer = deviceContainer.findViewById(R.id.password_container);
                         
-                        // Find device info
-                        RestApi restApi = getApi();
-                        List<Device> devicesList = mConfig.getDevices(restApi, false);
-                        Device deviceInfo = null;
-                        for (Device dev : devicesList) {
-                            if (dev.deviceID.equals(device.deviceID)) {
-                                deviceInfo = dev;
-                                break;
-                            }
-                        }
-                        
+                        // Find device info using cached method
+                        Device deviceInfo = findDeviceInfo(device.deviceID);
                         if (deviceInfo != null) {
                             updateTrustStatusUI(trustStatusContainer, trustStatusLabel, passwordVisibilityToggle, 
                                               passwordContainer, encryptPassView, device, deviceInfo);
@@ -245,13 +265,14 @@ public class FolderActivity extends SyncthingActivity {
                 // Loop through devices the folder is shared to and show/hide trust status and password UI.
                 for (int i = 0; i < mDevicesContainer.getChildCount(); i++) {
                     LinearLayout deviceView = (LinearLayout) mDevicesContainer.getChildAt(i);
-                    SwitchCompat switchView = (SwitchCompat) deviceView.getChildAt(0);
+                    LinearLayout deviceContainer = deviceView.findViewById(R.id.device_container);
+                    SwitchCompat switchView = deviceContainer.findViewById(R.id.device_toggle);
                     if (device == ((SharedWithDevice) switchView.getTag())) {
-                        LinearLayout trustStatusContainer = deviceView.findViewById(R.id.trust_status_container);
-                        LinearLayout passwordContainer = deviceView.findViewById(R.id.password_container);
-                        TextView trustStatusLabel = deviceView.findViewById(R.id.trust_status_label);
-                        ImageButton passwordVisibilityToggle = deviceView.findViewById(R.id.password_visibility_toggle);
-                        EditText encryptPassView = deviceView.findViewById(R.id.device_encryptionPassword);
+                        LinearLayout trustStatusContainer = deviceContainer.findViewById(R.id.trust_status_container);
+                        LinearLayout passwordContainer = deviceContainer.findViewById(R.id.password_container);
+                        TextView trustStatusLabel = deviceContainer.findViewById(R.id.trust_status_label);
+                        ImageButton passwordVisibilityToggle = deviceContainer.findViewById(R.id.password_visibility_toggle);
+                        EditText encryptPassView = deviceContainer.findViewById(R.id.device_encryptionPassword);
                         
                         if (isChecked) {
                             SharedWithDevice sharedDevice = new SharedWithDevice();
@@ -259,17 +280,8 @@ public class FolderActivity extends SyncthingActivity {
                             sharedDevice.introducedBy = device.introducedBy;
                             sharedDevice.encryptionPassword = "";
                             
-                            // Find device info for display name
-                            RestApi restApi = getApi();
-                            List<Device> devicesList = mConfig.getDevices(restApi, false);
-                            Device deviceInfo = null;
-                            for (Device dev : devicesList) {
-                                if (dev.deviceID.equals(device.deviceID)) {
-                                    deviceInfo = dev;
-                                    break;
-                                }
-                            }
-                            
+                            // Find device info using cached method
+                            Device deviceInfo = findDeviceInfo(device.deviceID);
                             if (deviceInfo != null) {
                                 updateTrustStatusUI(trustStatusContainer, trustStatusLabel, passwordVisibilityToggle, 
                                                   passwordContainer, encryptPassView, sharedDevice, deviceInfo);
@@ -633,8 +645,8 @@ public class FolderActivity extends SyncthingActivity {
         mCustomSyncConditionsDialog.setEnabled(mCustomSyncConditionsSwitch.isChecked());
 
         // Populate devicesList.
-        RestApi restApi = getApi();
-        List<Device> devicesList = mConfig.getDevices(restApi, false);
+        mCachedDevicesList = null; // Clear cache to get fresh data
+        List<Device> devicesList = getCachedDevicesList();
         mDevicesContainer.removeAllViews();
         if (devicesList.isEmpty()) {
             addEmptyDeviceListView();
@@ -866,7 +878,9 @@ public class FolderActivity extends SyncthingActivity {
         inflater.inflate(R.layout.item_device_form, mDevicesContainer);
         LinearLayout deviceView = (LinearLayout) mDevicesContainer.getChildAt(mDevicesContainer.getChildCount()-1);
 
-        SwitchCompat switchView = (SwitchCompat) deviceView.getChildAt(0);
+        // Find the device container and then the switch within it
+        LinearLayout deviceContainer = deviceView.findViewById(R.id.device_container);
+        SwitchCompat switchView = deviceContainer.findViewById(R.id.device_toggle);
         switchView.setOnCheckedChangeListener(null);
         switchView.setChecked(mFolder.getDevice(device.deviceID) != null);
         switchView.setText(device.getDisplayName());
@@ -874,11 +888,11 @@ public class FolderActivity extends SyncthingActivity {
         switchView.setOnCheckedChangeListener(mCheckedListener);
 
         // Get references to the new UI elements
-        LinearLayout trustStatusContainer = deviceView.findViewById(R.id.trust_status_container);
-        TextView trustStatusLabel = deviceView.findViewById(R.id.trust_status_label);
-        ImageButton passwordVisibilityToggle = deviceView.findViewById(R.id.password_visibility_toggle);
-        LinearLayout passwordContainer = deviceView.findViewById(R.id.password_container);
-        EditText encryptPassView = deviceView.findViewById(R.id.device_encryptionPassword);
+        LinearLayout trustStatusContainer = deviceContainer.findViewById(R.id.trust_status_container);
+        TextView trustStatusLabel = deviceContainer.findViewById(R.id.trust_status_label);
+        ImageButton passwordVisibilityToggle = deviceContainer.findViewById(R.id.password_visibility_toggle);
+        LinearLayout passwordContainer = deviceContainer.findViewById(R.id.password_container);
+        EditText encryptPassView = deviceContainer.findViewById(R.id.device_encryptionPassword);
 
         encryptPassView.removeTextChangedListener(mTextWatcher);
 
