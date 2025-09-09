@@ -910,7 +910,11 @@ public class FolderActivity extends SyncthingActivity {
         trustStatusContainer.setOnClickListener(v -> onTrustStatusClick(device, trustStatusContainer, 
                                                                        trustStatusLabel, passwordVisibilityToggle, 
                                                                        passwordContainer, encryptPassView));
-        passwordVisibilityToggle.setOnClickListener(v -> onPasswordVisibilityToggle(existingDevice));
+        passwordVisibilityToggle.setOnClickListener(v -> {
+            // Get the current device state from the folder, not the cached existingDevice
+            SharedWithDevice currentDevice = mFolder.getDevice(device.deviceID);
+            onPasswordVisibilityToggle(currentDevice);
+        });
 
         encryptPassView.addTextChangedListener(mTextWatcher);
     }
@@ -921,7 +925,15 @@ public class FolderActivity extends SyncthingActivity {
         boolean hasPassword = device != null && !TextUtils.isEmpty(device.encryptionPassword);
         
         trustStatusContainer.setVisibility(View.VISIBLE);
-        passwordContainer.setVisibility(View.VISIBLE);
+        // Hide the password input field since passwords are now managed through dialogs
+        passwordContainer.setVisibility(View.GONE);
+        
+        // Sync the hidden EditText with the device password for TextWatcher compatibility
+        if (encryptPassView != null) {
+            encryptPassView.removeTextChangedListener(mTextWatcher);
+            encryptPassView.setText(hasPassword ? device.encryptionPassword : "");
+            encryptPassView.addTextChangedListener(mTextWatcher);
+        }
         
         if (hasPassword) {
             trustStatusLabel.setText(R.string.device_untrusted_label);
