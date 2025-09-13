@@ -13,9 +13,7 @@
     <!-- Dialog themes -->
     <eat-comment/>
 
-    <style name="Theme.Syncthing.Dialog" parent="Theme.AppCompat.Dialog.Alert">
-        <item name="colorAccent">@color/light_blue</item>
-        <item name="android:windowBackground">@color/blue_grey</item>
-        <item name="android:textColor">?attr/colorControlNormal</item>
+    <style name="Theme.Syncthing.Dialog" parent="ThemeOverlay.Material3.Dialog.Alert">
+        <item name="colorPrimary">@color/primary_dark</item>
     </style>
 </resources>
