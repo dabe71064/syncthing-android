@@ -6,4 +6,8 @@
     <!-- MainActivity start -->
     <color name="bottom_navigation_bar">#263238</color>
     <!-- MainActivity end -->
+
+    <!-- Button colors for dark mode -->
+    <color name="btn_welcome_slide_background">#424242</color> <!-- Dark grey background -->
+    <color name="btn_welcome_slide_stroke">#616161</color> <!-- Medium grey border -->
 </resources>
