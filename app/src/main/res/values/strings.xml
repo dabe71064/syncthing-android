@@ -135,7 +135,7 @@
 
     <!-- FolderListFragment -->
 
-    <string name="folders_fragment_title">Folders</string>
+    <string name="folders_fragment_title">FOLDERS</string>
 
     <!-- Shown if no folders exist -->
     <string name="folder_list_empty">No folders found</string>
@@ -175,7 +175,7 @@
     <!-- DeviceListFragment -->
 
     <!-- Devices tab title -->
-    <string name="devices_fragment_title">Devices</string>
+    <string name="devices_fragment_title">DEVICES</string>
 
     <!-- Shown if no devices are configured in add folder dialog -->
     <string name="devices_list_empty">No devices configured. Tap to add a new device.</string>
@@ -221,7 +221,7 @@
 
     <!-- StatusFragment -->
 
-    <string name="status_fragment_title">Status</string>
+    <string name="status_fragment_title">STATUS</string>
 
     <string name="button_follow_run_conditions">FOLLOW RUN CONDITIONS</string>
     <string name="button_force_start">FORCE START
