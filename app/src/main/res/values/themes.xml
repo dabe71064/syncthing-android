@@ -56,6 +56,18 @@
         <item name="colorPrimary">@color/primary_dark</item>
     </style>
 
+    <!-- Dialog Activity theme - for activities that should look like dialogs -->
+    <style name="Theme.Syncthing.DialogActivity" parent="Theme.Syncthing.Base">
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowCloseOnTouchOutside">false</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+        <item name="alertDialogTheme">@style/Theme.Syncthing.Dialog</item>
+    </style>
+
     <!-- Toolbar themes -->
     <eat-comment/>
 
