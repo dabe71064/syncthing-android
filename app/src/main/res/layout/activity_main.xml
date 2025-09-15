@@ -21,7 +21,7 @@
             android:theme="@style/ThemeOverlay.Syncthing.Toolbar"
             app:tabTextColor="@android:color/white"
             app:tabSelectedTextColor="@android:color/white"
-            app:tabIndicatorColor="@android:color/white"
+            app:tabIndicatorColor="@color/tab_indicator_color"
             app:tabIndicatorHeight="3dp" />
 
         <RelativeLayout
