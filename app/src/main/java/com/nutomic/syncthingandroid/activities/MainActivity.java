@@ -328,11 +328,11 @@ public class MainActivity extends SyncthingActivity
             public CharSequence getPageTitle(int position) {
                 switch (position) {
                     case FOLDER_FRAGMENT_ID:
-                        return getResources().getString(R.string.folders_fragment_title);
+                        return getResources().getString(R.string.folders_fragment_title).toUpperCase();
                     case DEVICE_FRAGMENT_ID:
-                        return getResources().getString(R.string.devices_fragment_title);
+                        return getResources().getString(R.string.devices_fragment_title).toUpperCase();
                     case STATUS_FRAGMENT_ID:
-                        return getResources().getString(R.string.status_fragment_title);
+                        return getResources().getString(R.string.status_fragment_title).toUpperCase();
                     default:
                         return String.valueOf(position);
                 }
